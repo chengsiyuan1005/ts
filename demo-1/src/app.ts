@@ -309,8 +309,15 @@ interface MusicInterface {
   play(val: string):string
 }
 
+interface newArr {
+  [name:number]:string
+}
+
 interface Running {
   sport(val: string):string
+  happy(val:string):string
+  pi:number
+  like: newArr
 }
 
 class CellPhone implements MusicInterface {
@@ -328,14 +335,163 @@ class Car implements MusicInterface, Running {
   sport (val: string): string {
     return 'every car have sport module ' + val
   }
+  happy (params:string) {
+    return 'he likes ' + params
+  }
+  pi = 3.14
+  like = ['write', 'read']
 }
 
 let car1 = new Car()
 
 console.log(cel1, cel1.play('iphone4`'))
 
-console.log(car1, car1.play(), car1.sport('to change!!!'))
+console.log(car1, car1.play(), car1.sport('to change!!!'), car1.happy('the car---'), car1.pi)
 
+
+let arr:newArr = ['11', '22']
+
+console.log('枚举--------------------------------------')
+enum Direction {
+  Up,
+  Down,
+  Left = 15, // 改变当前index (影响之后)
+  Right,
+  Front,
+  After
+}
+
+enum ThreeStatus {
+  NotFound = 404,
+  NetMiss = 500,
+  TokenExpire = 401
+}
+
+// Vue3 patchFlags
+enum PatchFlags {
+  TEXT = 1,                    // 动态文本节点
+  CLASS = 1 << 1,              // 动态 class
+  STYLE = 1 << 2,              // 动态 style
+  PROPS = 1 << 3,              // 动态属性
+  FULL_PROPS = 1 << 4,         // 具有动态 key 属性，当 key 改变时，需要进行完整的 diff 比较
+  HYDRATE_EVENTS = 1 << 5,     // 具有监听事件的节点
+  STABLE_FRAGMENT = 1 << 6,    // 子节点顺序不会被改变的 fragment
+  KEYED_FRAGMENT = 1 << 7,     // 带有 key 属或部分子节点有 key 的 fragment
+  UNKEYED_FRAGMENT = 1 << 8,   // 子节点没有 key 的 fragment
+  NEED_PATCH = 1 << 9,         // 非 props 的比较，比如 ref 或指令
+  DYNAMIC_SLOTS = 1 << 10,     // 动态插槽
+  DEV_ROOT_FRAGMENT = 1 << 11, // 仅供开发时使用，表示将注释放在模板根级别的片段
+  HOISTED = -1,                // 静态节点
+  BAIL = -2                    // diff 算法要退出优化模式
+}
+
+// 字符串枚举
+ enum Bark {
+  Up = 'Up',
+  Down = 'Down',
+  Left = 'Left',
+  Right = 'Right'
+}
+
+// 常量枚举 const枚举 仅 可在属性、索引访问表达式、导入声明的右侧、导出分配或类型查询中使用!!
+const enum PipLine {
+  One = 'One',
+  Two = 'Two',
+  Three = 'Three'
+}
+
+
+console.log(Direction, Direction[16])
+
+console.log(ThreeStatus, ThreeStatus[401], ThreeStatus['NotFound'])
+
+console.log(PatchFlags)
+
+console.log(Bark)
+
+if (PipLine.Two === 'Two') {
+  console.log('this is const enum PipLine second index to Two')
+}
+
+console.log('类型推论-----------------------------------')
+/**
+ * function 返回类型自动
+ * Array类型自动
+ *  | 联合类型 & 交叉类型
+ *  type 类型别名
+ *    type 和 interface 区别
+ *       1. 相同点: 
+ *          都可以定义一个对象或函数 
+ *          都允许继承
+ *       2. 不同点: 
+ *          interface 用来定义对象雷丁, 可以对对象类型进行描述
+ *          type是类型别名, 用于各种类型定义别名, 让ts更简洁
+ *          interface可以合并重复声明, type不行
+ *          一般用类的extends or implements 用 interface
+ */
+
+function printAge(num = 18) {
+  console.log(num)
+  return num
+}
+
+interface PrintAge {
+  (num: number): number,
+  key?: string
+}
+
+const printAge111: PrintAge = printAge
+
+console.log(printAge111)
+
+interface MyObj {
+  [name:string]:string | number
+}
+
+type arrType = number | string | null | MyObj
+
+let arr11:arrType[] = [0, 1, '2222', {key: 1, val: 'this is val'}]
+
+console.log(arr11)
+
+// interface合并重复声明
+interface Reply1{
+  name: string
+}
+
+interface Reply1 {
+  age: number
+}
+
+const re1: Reply1 = {
+  name: 'lily',
+  age: 18
+}
+
+console.log(re1)
+
+// 字面量常量
+type sex1 = 'female' | 'male'
+
+let newSex:sex1 = 'male'
+
+console.log('泛型-------------------------------------')
+function print1<T>(arg:T):T {
+  return arg
+}
+
+
+const res1:string = print1('123')
+const res2 = print1<string>('str222222')
+
+function print2<T, U>(arg1:T, arg2:U):[U, T] {
+  return [arg2, arg1]
+}
+
+const res3 = print2<string, number>('demo', 112)
+
+console.log(res1, res2)
+console.log(res3)
 
 
 
