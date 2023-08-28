@@ -490,8 +490,184 @@ function print2<T, U>(arg1:T, arg2:U):[U, T] {
 
 const res3 = print2<string, number>('demo', 112)
 
+// type 泛型
+type TypePrint = <T>(arg:T) => T
+const printFn:TypePrint = function(arg) {
+  return arg
+}
+
+// interface 泛型
+interface IPrint<T = number> { // 默认泛型number类型
+  (arg:T):T
+}
+function print3<T>(arg:T) {
+  return arg
+}
+const myPrint: IPrint<string> = print3  
+
+// 约束泛型
+interface ILength {
+  length: number
+}
+function printLength<T extends ILength>(arg: T): T  {
+  console.log('printLength:', arg.length)
+  return arg
+}
+const IL_str = printLength('lin')
+const IL_arr = printLength([1, 2, 3])
+const IL_obj = printLength({length: 10})
+
+// 泛型约束类
+class Stack<T> {
+  private data: T[] = []
+  push(item: T) {
+    return this.data.push(item)
+  }
+  pop(): T | undefined {
+    return this.data.pop() // 删除最后一个
+  }
+}
+
+const stack1 = new Stack<number | string>()
+
+// 泛型约束接口
+interface IKeyValue<T, U> {
+  key: T
+  value: U
+}
+
+const k1:IKeyValue<number, string> = {key: 18, value: 'lin'}
+const k2:IKeyValue<string, number> = {key: 'lily', value: 18}
+
+// 泛型定义数组
+const arrNew: Array<number | string> = [1, 2, 34, 'some']
+
+
+
 console.log(res1, res2)
 console.log(res3)
+
+console.log(printFn('this is print type'))
+console.log(myPrint('this is print Interface'))
+
+console.log(IL_str, IL_arr, IL_obj)
+
+stack1.push(14)
+stack1.push('one')
+stack1.push('two')
+stack1.push('three')
+stack1.push('str')
+stack1.pop()
+console.log(stack1)
+
+console.log(k1, k2)
+
+console.log(arrNew)
+
+
+console.log('高级类型-----------------------------------------')
+const userInfo = {
+  name: 'lin',
+  age: 18
+}
+
+function getValues(info: any, keys: string[]) {
+  return keys.map(key => info[key])
+}
+
+// 抽取指定属性的值
+console.log(getValues(userInfo, ['name', 'age']))
+// 抽取obj中没有的属性 (返回undefined 但不报错)
+console.log(getValues(userInfo, ['sex', 'outlook']))
+
+interface IPerson {
+  name: string,
+  age: number
+}
+
+// keyof 索引查询
+type Test = keyof IPerson // 'name' | 'age
+
+// T[k] 索引访问
+let type1: IPerson['name']
+let type2: IPerson['age']
+
+// extends 泛型约束 (复习)
+interface INewLength {
+  length: number
+}
+
+function printNewLength<T extends INewLength>(arg: T): T {
+  console.log('new print length', arg.length)
+  return arg
+}
+
+const newStr = printNewLength('lin')
+const newArr = printNewLength([1, 2, 3])
+const newObj = printNewLength({length: 10})
+
+console.log(newStr, newArr, newObj)
+
+// 检测动态属性
+// 对 userInfo keys.map方法替换, 实现动态属性检查
+function newGetValues<T, K extends keyof T>(info: T, keys: K[]): T[K][] {
+  return keys.map(key => info[key])
+}
+
+
+console.log(newGetValues(userInfo, ['name', 'age']))
+
+console.log(newGetValues(userInfo, ['sex', 'outlook'])) // 当指定不在对象的属性, 会报错 (还是会打印undefined)
+
+// 映射类型
+// in
+type PersonIn = 'name' | 'school' | 'major'
+
+type ObjIn = {
+  [p in PersonIn]:string
+}
+
+interface IPersonIn {
+  name: string,
+  age: number
+}
+
+let pIn1:IPersonIn = {
+  name: 'lin',
+  age: 20
+}
+
+// Partial
+type IPartial = Partial<IPersonIn>
+
+let p1In:IPartial = {}
+console.log(p1In)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
