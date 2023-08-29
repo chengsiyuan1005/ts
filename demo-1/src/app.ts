@@ -619,17 +619,24 @@ console.log(newGetValues(userInfo, ['name', 'age']))
 
 console.log(newGetValues(userInfo, ['sex', 'outlook'])) // 当指定不在对象的属性, 会报错 (还是会打印undefined)
 
-// 映射类型
-// in
+
+/**
+ * 映射类型
+ * in
+ * 同态: Partial, Readonly, Pick (只作用与obj属性而不会引入新的类型)
+ * 非同态: Record (会创建新属性的非同态映射类型)
+ */
 type PersonIn = 'name' | 'school' | 'major'
 
 type ObjIn = {
   [p in PersonIn]:string
 }
 
+
 interface IPersonIn {
   name: string,
-  age: number
+  age: number,
+  like?: (string | number)[]
 }
 
 let pIn1:IPersonIn = {
@@ -638,16 +645,143 @@ let pIn1:IPersonIn = {
 }
 
 // Partial
+// Partial<T> 将T的所有属性映射为可选的
 type IPartial = Partial<IPersonIn>
 
-let p1In:IPartial = {}
-console.log(p1In)
+let p1In:IPartial = {
+  name: 'linda',
+  age: 33,
+  like: ['swim', 33]
+}
+
+p1In.name = 'Ada'
+
+// Readonly
+// Readonly<T> 将所有属性映射为只读的
+type IReadOnly = Readonly<IPerson>
+
+let p2In:IReadOnly ={
+  name: 'lily',
+  age: 22
+}
+
+p2In.name = 'Jack' // 只读, 修改报错
+
+// Pick
+// Pick 用于抽取对象子集, 挑选一组属性并组成一个新的类型
+type IPick = Pick<IPersonIn, 'name' | 'age'>
+
+let p3In:IPick = {
+  name: 'Bird',
+  age: 3
+}
+
+// Record
+// Record 会创建新属性的非同态映射类型
+type IRecord = Record<string, IPersonIn>
+
+let p4In:IRecord = {
+  person1: {
+    name: 'Rose',
+    age: 22
+  },
+  person2: {
+    name: 'Xu',
+    age: 23,
+    like: ['eat']
+  }
+}
+
+console.log(p1In, p2In, p3In, p4In)
+
+/**
+ * 条件类型
+ * Exclude - 取反
+ * Extract - 交集
+ */
+
+interface PersonCon {
+  name : string,
+  age : 22,
+  like ?: (string | number)[]
+}
+
+// Exclude
+// Exclude 意思是不包含，Exclude<T, U> 会返回 联合类型 T 中不包含 联合类型 U 的部分
+type CExclude = Exclude<'name' | 'age' | 'like' | 'sex', keyof PersonCon>
+
+let pC1:CExclude = 'sex'
+
+// Extract
+// Extract<T, U>提取联合类型 T 和联合类型 U 的所有交集
+type CExtract = Extract<'name', keyof PersonCon>
+
+let pC2:CExtract = 'name'
+
+console.log(pC1, pC2)
+
+
+/**
+ * 其他工具类型
+ * example
+ * Omit<T, U>从类型 T 中剔除 U 中的所有属性
+ * NonNullable<T> 用来过滤类型中的 null 及 undefined 类型
+ * Parameters 获取函数的参数类型，将每个参数类型放在一个元组中
+ * ReturnType 获取函数的返回值类型 同样放在元组中
+ */
+interface PersonOther {
+  name: string,
+  age: number,
+  like: (string | number)[]
+}
+
+
+type OmitType = Omit<PersonOther, 'age'> // Omit
+type NonNullableType = NonNullable<keyof PersonOther> // NonNullable
+type ParametersType = Parameters<(arg:string) => string> // Parameters
+type ReturnTypeType = ReturnType<(arg:string) => (string | number)[]> // ReturnType
+
+let pO1:OmitType = {
+  name: 'Banana',
+  like: [11]
+}
+let pO2:NonNullableType = 'name'
+let pO3:ParametersType = ['just a tuple typeof function return type - string']
+let pO4:ReturnTypeType = ['just a tuple typeof function return type - string | number', 2222]
+
+console.log(pO1, pO2, pO3, pO4)
+
+console.log('TS声明文件-------------------------------------------')
+// src/index.ts
+ 
+
+// Vue 类已在all.d.ts中声明
+const app = new Vue({
+  el: '#app',
+  data: {
+    message: 'Hello Vue!'
+  }
+})
+
+
+// myFetch
 
 
 
+function myFetch(url, method, data) {
+  return fetch(url, {
+      body: data ? JSON.stringify(data) : '',
+      method
+  }).then(res => res.json())
+}
 
+myFetch.get = (url) => {
+  return myFetch(url, 'GET')
+}
 
-
+myFetch.post = (url, data) => {
+  return myFetch(url, 'POST', data)
+}
 
 
 
